@@ -17,7 +17,8 @@ For this project, you will write a Packer template and a Terraform template to d
 4. Install [Terraform](https://www.terraform.io/downloads.html)
 
 ### Instructions
-**Your words here**
+1. Execute the file taggin_policy.sh to create a tagging policy that ensure that all ressources will have a tag. 
+2.
 
 ### Output
 **Your words here**
