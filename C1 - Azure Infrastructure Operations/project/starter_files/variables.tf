@@ -27,3 +27,8 @@ variable "project"{
   description = "tag of the project"
   default = "Udacity2023_P1"
 }
+
+variable "vmCount" {
+ description = "Amount of VMs that should be created"
+ default = 2 
+}

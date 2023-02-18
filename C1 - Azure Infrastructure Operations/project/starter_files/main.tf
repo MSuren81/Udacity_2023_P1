@@ -9,8 +9,15 @@ provider "azurerm" {
   features {}
 }
 
+data azurerm_subscription "current" { }
+
+data "azurerm_image" "customimage" {
+   name                = "myPackerimageUdacity"
+   resource_group_name = "Udacity_RG_P1"
+}
+
 resource "azurerm_resource_group" "main" {
-  name     = "${var.prefix}-resources"
+  name     = "${var.prefix}-ressources"
   location = var.location
   tags = "${merge(local.common_tags)}"
   
@@ -34,13 +41,14 @@ resource "azurerm_subnet" "internal" {
 
 # Define Network Interface NIC
 resource "azurerm_network_interface" "main" {
-  name                = "${var.prefix}-nic"
+  name                = "${var.prefix}-nic-${count.index +1}"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
+  count               = 2
   tags = "${merge(local.common_tags)}"
 
   ip_configuration {
-    name                          = "internal"
+    name                          = "internal-${count.index +1}"
     subnet_id                     = azurerm_subnet.internal.id
     private_ip_address_allocation = "Dynamic"
   }
@@ -135,20 +143,25 @@ resource "azurerm_lb_backend_address_pool" "loadbalancer" {
 }
 
 resource "azurerm_network_interface_backend_address_pool_association" "loadbalancer" {
-  backend_adress_pool_id = azurerm_lb_backend_address_pool.loadbalancer.id
-  ip_configuration_name  = "backendAdressPoolPrimary"
-  network_interface_id   = element(azurerm.network_interface.main.*.id, count.index) 
+  network_interface_id    = azurerm_resource_group.main.id
+  ip_configuration_name   = "testconfiguration1"
+  backend_address_pool_id = azurerm_lb_backend_address_pool.loadbalancer.id
 }
 
-resource "azurerm_lb_nat_pool" "LoadBalancer" {
+resource "azurerm_lb_nat_pool" "loadbalancer" {
   resource_group_name            = azurerm_resource_group.main.name
-  loadbalancer_id                = azurerm_lb.main.id
-  name                           = "LoadbalancerNatPool"
+  loadbalancer_id                = azurerm_lb.loadbalancer.id
+  name                           = "SampleApplicationPool"
+  protocol                       = "Tcp"
+  frontend_port_start            = 443
+  frontend_port_end              = 443
+  backend_port                   = 443
+  frontend_ip_configuration_name = "PublicIPAddress"
 }
 
 resource "azurerm_lb_nat_rule" "LoadbancerNatRule" {
   resource_group_name            = azurerm_resource_group.main.name
-  loadbalancer_id                = azurerm_lb.main.id
+  loadbalancer_id                = azurerm_lb.loadbalancer.id
   name                           = "HTTPSAccess"
   protocol                       = "Tcp"
   frontend_port                  = 443
@@ -168,7 +181,8 @@ resource "azurerm_availability_set" "availablitltySet" {
 
 # Definfe vm 
 resource "azurerm_linux_virtual_machine" "main" {
-  name                            = "${var.prefix}-vm"
+  count                           = var.vmCount
+  name                            = "${var.prefix}-vm${count.index}"
   resource_group_name             = azurerm_resource_group.main.name
   location                        = azurerm_resource_group.main.location
   size                            = "Standard_D2s_v3"
@@ -179,12 +193,14 @@ resource "azurerm_linux_virtual_machine" "main" {
   tags = "${merge(local.common_tags)}"
 
   network_interface_ids = [
-    azurerm_network_interface.main.id,
+    azurerm_network_interface.main[count.index].id,
   ]
 
 # Define custom created Image 
-  source_image_id = "${data.azurerm_subscription.currnent.id}/ressourceGroup/Udacity_RG_P1/providers/Microsoft.Comute/images/myPackerimageUdacity"
 
+
+  source_image_id = data.azurerm_image.customimage.id
+  
   os_disk {
     storage_account_type = "Standard_LRS"
     caching              = "ReadWrite"
