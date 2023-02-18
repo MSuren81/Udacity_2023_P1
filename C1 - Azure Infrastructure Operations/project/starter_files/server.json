@@ -1,8 +1,8 @@
 {
 	"variables": {
-		"client_id": "{{env `ARM_CLIENT_ID`}}",
-		"client_secret": "{{env `ARM_CLIENT_SECRET`}}",
-		"subscription_id": "{{env `ARM_SUBSCRIPTION_ID`}}",
+		"client_id": "",
+		"client_secret": "",
+		"subscription_id": "",
 		"tenant_id": ""
 	},
 	"builders": [{
@@ -15,13 +15,13 @@
 		"image_publisher": "Canonical",
 		"image_offer": "UbuntuServer",
 		"image_sku": "18.04-LTS",
-		"managed_image_resource_group_name": "Azuredevops",
-		"managed_image_name": "myPackerimage",
+		"managed_image_resource_group_name": "Udacity_RG_P1",
+		"managed_image_name": "myPackerimageUdacity",
 		"location": "West Europe",
 		"vm_size": "Standard_B1s",
 		
 		 "azure_tags": {
-			"dept": "lab",
+			"environment": "dev",
 			"task": "Image deployment"
 		}
 	  }],

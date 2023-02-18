@@ -18,7 +18,16 @@ For this project, you will write a Packer template and a Terraform template to d
 
 ### Instructions
 1. Execute the file taggin_policy.sh to create a tagging policy that ensure that all ressources will have a tag. 
-2.
+2. Create the file packerSecret.json. In this file add the following items: 
+```json
+{
+    "client_id": "XXXXX-XXXXX-XXXXXXXXXXXX",
+    "client_secret": "XXXXX-XXXXX-XXXXXXXXXXXX",
+    "subscription_id": "XXXXX-XXXXX-XXXXXXXXXXXX",
+    "tenant_id": "XXXXX-XXXXX-XXXXXXXXXXXX"
+}
+```
+Add your client_id, client_secret, subscription_id and tenant_id as described above to the file and save the file. 
 
 ### Output
 **Your words here**
