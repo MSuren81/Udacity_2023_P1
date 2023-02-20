@@ -142,22 +142,29 @@ resource "azurerm_lb_backend_address_pool" "loadbalancer" {
   name                   = "backendAddressPool"
 }
 
+#resource "azurerm_network_interface_backend_address_pool_association" "loadbalancer" {
+#  network_interface_id    = azurerm_resource_group.main.id
+#  ip_configuration_name   = "testconfiguration1"
+#  backend_address_pool_id = azurerm_lb_backend_address_pool.loadbalancer.id
+#}
+
 resource "azurerm_network_interface_backend_address_pool_association" "loadbalancer" {
-  network_interface_id    = azurerm_resource_group.main.id
-  ip_configuration_name   = "testconfiguration1"
+  count                   = var.vmCount
   backend_address_pool_id = azurerm_lb_backend_address_pool.loadbalancer.id
+  ip_configuration_name   = "internal-${count.index +1}"
+  network_interface_id    = element(azurerm_network_interface.main.*.id, count.index)
 }
 
-resource "azurerm_lb_nat_pool" "loadbalancer" {
-  resource_group_name            = azurerm_resource_group.main.name
-  loadbalancer_id                = azurerm_lb.loadbalancer.id
-  name                           = "SampleApplicationPool"
-  protocol                       = "Tcp"
-  frontend_port_start            = 443
-  frontend_port_end              = 443
-  backend_port                   = 443
-  frontend_ip_configuration_name = "PublicIPAddress"
-}
+#resource "azurerm_lb_nat_pool" "loadbalancer" {
+#  resource_group_name            = azurerm_resource_group.main.name
+#  loadbalancer_id                = azurerm_lb.loadbalancer.id
+#  name                           = "SampleApplicationPool"
+#  protocol                       = "Tcp"
+#  frontend_port_start            = 443
+#  frontend_port_end              = 443
+#  backend_port                   = 443
+#  frontend_ip_configuration_name = "PublicIPAddress"
+#}
 
 resource "azurerm_lb_nat_rule" "LoadbancerNatRule" {
   resource_group_name            = azurerm_resource_group.main.name
@@ -166,7 +173,7 @@ resource "azurerm_lb_nat_rule" "LoadbancerNatRule" {
   protocol                       = "Tcp"
   frontend_port                  = 443
   backend_port                   = 443
-  frontend_ip_configuration_name = "PublicIPAdress"
+  frontend_ip_configuration_name = "PublicIPAddress"
 }
 
 # Define availablitlty set
