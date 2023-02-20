@@ -28,7 +28,35 @@ For this project, you will write a Packer template and a Terraform template to d
 }
 ```
 Add your client_id, client_secret, subscription_id and tenant_id as described above to the file and save the file. 
+See picture tagging-policy.png in this repository
 
 ### Output
 **Your words here**
+### Packer Template execution
+The packer template defines the Image of the server. 
+The file server.json is the blue print for this server and it takes the imput of the packerSecret file. 
+You can execute this script while running the run.sh script. 
+This will create your Image. 
+
+### TerraformScripts
+The file main.tf contains the terraform description of the Infrastructure. 
+To configure the basic sets open the variables.tf file and adjust the values for
+1. Location
+2. Tags
+3. Projectname
+4. prefix
+
+for running the script please execute
+```shell
+{
+    terraform plan -out=p1_plan
+}
+```
+After that, please run execute the plan with 
+```shell
+{
+    terraform apply p1_plan
+}
+```
+With this command everything will be created, das described. 
 
